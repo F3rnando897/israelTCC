@@ -1,0 +1,84 @@
+#createServico-form{
+    margin-top: 10%;
+    
+}
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+.midBody {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.form-container {
+    width: 35%; /* Ajuste a largura conforme necessário */
+    margin-right: 10%; /* Adiciona uma margem à direita para espaçamento */
+}
+
+.list-container {
+    width: 60%; /* Ajuste a largura conforme necessário */
+    /* Adicione estilos adicionais para a lista se necessário */
+}
+
+nav.navbar {
+    background-color: #007bff !important;
+}
+
+nav.navbar a.navbar-brand {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.navbar-toggler-icon {
+    background-color: #ffffff;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+form label {
+    font-weight: bold;
+}
+
+button#createServico {
+    background-color: #007bff;
+    border: none;
+}
+
+button#createServico:hover {
+    background-color: #0056b3;
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+.navbar-option {
+        color: white; /* Cor do texto */
+        margin-right: 10px; /* Espaçamento entre opções */
+      }
+
+      .navbar-option:hover {
+        text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+      }
+
+      #logout {
+        cursor: pointer; /* Adiciona o cursor de mão ao passar o mouse */
+      }
+
+      /* Adicione mais estilos conforme necessário para o formulário */
+      #createServico-form {
+        margin-top: 20px; /* Espaçamento superior ao formulário */
+      }

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" type="x-icon"
+        href="https://raw.githubusercontent.com/YsraelBaruk/imgsTCC/master/icon/dente-30.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Clinic</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .navbar {
+            background-color: #007bff !important;
+        }
+
+        .navbar a.navbar-brand {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ffffff;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+        }
+
+        #chartContainer {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        #chartContainer2 {
+            max-width: 500px;
+            margin-left: 14rem;
+        }
+
+        .chart-container {
+            margin: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container2 {
+            margin: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .serviceDetailsContainer{
+            width: 360px;
+            margin: 20px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #logout button {
+            background-color: #343a40;
+            border: none;
+        }
+
+        #logout button:hover {
+            background-color: #212529;
+        }
+
+        #percentageContainer {
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .percentage-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" href="./agenda.html">Agenda</a>
+                <a class="nav-item nav-link" href="./dash.html">Serviços</a>
+                <a class="nav-item nav-link" href="./relatorios.html">Relatórios</a>
+                <a class="nav-item nav-link" href="#">Equipe</a>
+                <a class="nav-item nav-link" href="#">Clientes</a>
+            </div>
+        </div>
+        <div class="navbar-nav ml-auto">
+            <a class="navbar-brand" id="user-logged-in" href="#">User</a>
+            <span id="logout" class="nav-item ml-2"></span>
+        </div>
+    </nav>
+
+    <div id="chartContainer">
+        <h4>Grafico de agendamentos</h4>
+        <div class="chart-container">
+            <canvas id="agendamentosMensaisChart" width="400" height="200"></canvas>
+            <button id="toggleChartBtn" class="btn btn-primary">Por dia</button>
+        </div>
+    </div>
+
+    <div id="chartContainer2">
+        <h4>Gráfico de Serviços Mais Solicitados</h4>
+        <div style="display: flex; justify-content: space-between; width: 50%;">
+        <div class="chart-container2">
+            <div style="display: flex; justify-content: space-between;">
+                <canvas id="servicosSolicitadosChart" width="400" height="200"></canvas>
+            </div>
+            <div id="percentageContainer"></div>
+        </div>
+        <div class="col-md-4">
+            <div id="serviceDetails" class="serviceDetailsContainer">
+                <p>Detalhes do Serviço:</p>
+                <p>Nome:</p>
+                <p>Quantidade:</p>
+                <!-- Conteúdo do serviceDetails será adicionado dinamicamente pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript" src="../key.js"></script>
+    <script type="text/javascript" src="../classs/user.js"></script>
+    <script type="text/javascript" src="../classs/servico.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const currentUser = Parse.User.current();
+            // Buscar dados da tabela "Agenda"
+            const Agenda = Parse.Object.extend('Agenda');
+            const queryAgenda = new Parse.Query(Agenda);
+            queryAgenda.equalTo('dentista_id', currentUser);
+            const resultsAgenda = await queryAgenda.find();
+
+            const Servico = Parse.Object.extend('Servico');
+const queryServico = new Parse.Query(Servico);
+queryServico.containedIn('objectId', resultsAgenda.map(agendamento => agendamento.get('servico_id').id));
+const resultadosServico = await queryServico.find();
+
+const precosServicos = {};
+resultadosServico.forEach(servico => {
+    precosServicos[servico.get('nome')] = servico.get('preco');
+});
+
+            // Processar dados para o gráfico de agendamentos
+            const agendamentosPorMes = {};
+            const agendamentosPorDia = {};
+            resultsAgenda.forEach(agendamento => {
+                const data = agendamento.get('data').toISOString().split('T')[0];
+                const mesAno = new Date(data).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                const dia = new Date(data).toLocaleDateString('en-US');
+
+                if (agendamentosPorMes[mesAno]) {
+                    agendamentosPorMes[mesAno] += 1;
+                } else {
+                    agendamentosPorMes[mesAno] = 1;
+                }
+
+                if (agendamentosPorDia[dia]) {
+                    agendamentosPorDia[dia] += 1;
+                } else {
+                    agendamentosPorDia[dia] = 1;
+                }
+            });
+
+            const dadosMes = Object.values(agendamentosPorMes);
+            const labelsMes = Object.keys(agendamentosPorMes);
+            const labelsDia = Object.keys(agendamentosPorDia);
+            const dadosDia = Object.values(agendamentosPorDia);
+
+            // Gráfico de Agendamentos ao Longo do Mês
+            var agendamentosMensaisCtx = document.getElementById('agendamentosMensaisChart').getContext('2d');
+            var agendamentosMensaisChart = new Chart(agendamentosMensaisCtx, {
+                type: 'bar',
+                data: {
+                    labels: labelsMes,
+                    datasets: [{
+                        label: 'Agendamentos por Mês',
+                        data: dadosMes,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            type: 'linear',
+                            stepSize: 1,
+                        }
+                    }
+                }
+            });
+
+            // Adicionando o botão de alternância
+            const toggleChartBtn = document.getElementById('toggleChartBtn');
+            toggleChartBtn.addEventListener('click', function () {
+                // Toggle entre visualização mensal e diária
+                if (agendamentosMensaisChart.data.labels === labelsMes) {
+                    agendamentosMensaisChart.data.labels = labelsDia;
+                    agendamentosMensaisChart.data.datasets[0].data = dadosDia;
+                    agendamentosMensaisChart.options.scales.x.title.text = 'Agendamentos por Dia';
+                    toggleChartBtn.textContent = 'Por Mês';
+                } else {
+                    agendamentosMensaisChart.data.labels = labelsMes;
+                    agendamentosMensaisChart.data.datasets[0].data = dadosMes;
+                    agendamentosMensaisChart.options.scales.x.title.text = 'Agendamentos por Mês';
+                    toggleChartBtn.textContent = 'Por Dia';
+                }
+
+                agendamentosMensaisChart.update(); // Atualiza o gráfico
+            });
+
+            // Processar dados para o gráfico de serviços mais solicitados
+            const servicosMaisSolicitados = {};
+
+            // Criar uma lista de promessas para buscar os objetos referenciados em 'servico_id'
+            const promises = resultsAgenda.map(async (agendamento) => {
+                const servicoPointer = agendamento.get('servico_id');
+
+                // Verificar se o ponteiro para 'servico_id' não é nulo
+                if (servicoPointer) {
+                    // Buscar o objeto referenciado
+                    const servico = await servicoPointer.fetch();
+                    const nomeServico = servico.get('nome');
+
+                    // Agora, você pode obter o preço do serviço diretamente
+                    const precoServico = servico.get('preco');
+                    console.log(precoServico)
+                    // Inicializar o contador para cada serviço
+                    servicosMaisSolicitados[nomeServico] = (servicosMaisSolicitados[nomeServico] || 0) + 1;
+
+                }
+            });
+
+            // Aguardar todas as promessas serem resolvidas
+            await Promise.all(promises);
+
+            const dadosServicos = Object.values(servicosMaisSolicitados);
+            const labelsServicos = Object.keys(servicosMaisSolicitados);
+
+            // Gráfico de Serviços Mais Solicitados
+            var servicosSolicitadosCtx = document.getElementById('servicosSolicitadosChart').getContext('2d');
+            var servicosSolicitadosChart = new Chart(servicosSolicitadosCtx, {
+                type: 'pie',
+                data: {
+                    labels: labelsServicos,
+                    datasets: [{
+                        data: dadosServicos,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
+                            // Adicione mais cores se houver mais serviços
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: handlePieClick
+                    // Adicione mais opções conforme necessário
+                }
+            });
+
+            function handlePieClick(event) {
+    var serviceDetailsElement = document.getElementById('serviceDetails');
+
+    // Verificar se o elemento existe
+    if (!serviceDetailsElement) {
+        console.error("Element with ID 'serviceDetails' not found.");
+        return;
+    }
+
+    var activeElements = servicosSolicitadosChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, false);
+
+    if (activeElements.length > 0) {
+        // Obtém o índice do elemento clicado
+        var clickedIndex = activeElements[0].index;
+
+        // Recupera as informações do serviço correspondente
+        var serviceName = labelsServicos[clickedIndex];
+        var serviceCount = dadosServicos[clickedIndex];
+        console.log(resultsAgenda[clickedIndex])
+        // Verifica se o preço do serviço está disponível
+        if (precosServicos && precosServicos[serviceName] !== undefined) {
+    var servicePrice = precosServicos[serviceName];
+
+    // Exibe as informações do serviço em um elemento HTML, incluindo o preço
+    serviceDetailsElement.innerHTML = `<p>Detalhes do Serviço:</p>
+                                      <p>Nome: ${serviceName}</p>
+                                      <p>Quantidade: ${serviceCount}</p>
+                                      <p>Preço: R$ ${servicePrice.toFixed(2)}</p>`;
+} else {
+    // Se o preço não estiver disponível, exibe sem o preço
+    serviceDetailsElement.innerHTML = `<p>Detalhes do Serviço:</p>
+                                      <p>Nome: ${serviceName}</p>
+                                      <p>Quantidade: ${serviceCount}</p>
+                                      <p>Preço: Indisponível</p>`;
+}
+    }
+}
+
+            // Adicionar porcentagens ao lado do gráfico de pizza
+            const percentageContainer = document.getElementById('percentageContainer');
+            labelsServicos.forEach((label, index) => {
+                const percentage = (dadosServicos[index] / dadosServicos.reduce((a, b) => a + b, 0) * 100).toFixed(2);
+                const percentageText = `<div class="percentage-item">${label}: ${percentage}%</div>`;
+                percentageContainer.innerHTML += percentageText;
+            });
+        });
+    </script>
+
+    <script>
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+
+    <script>
+        window.onload = function () {
+            // Verificar se o usuário está autenticado
+            const currentUser = Parse.User.current();
+
+            if (currentUser) {
+                const userName = currentUser.get('username');
+                const userLoggedInElement = document.getElementById('user-logged-in');
+                userLoggedInElement.textContent = 'Olá, ' + userName;
+
+                const logout = document.getElementById('logout');
+                let textLogout = `<button type="button" class="btn btn-dark">Logout</button>`;
+                logout.innerHTML = textLogout;
+                logout.href = '#';
+                logout.addEventListener('click', function () {
+                    Parse.User.logOut();
+                    window.location.href = '../index.html';
+                });
+                userLoggedInElement.appendChild(logout);
+            }
+        }
+    </script>
+
+</body>
+
+</html>

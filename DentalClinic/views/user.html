@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="shortcut icon" type="x-icon" href="https://raw.githubusercontent.com/YsraelBaruk/imgsTCC/master/icon/dente-30.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Clinic</title>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/user/style.css">
+
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+
+    <style>
+      body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .agendas {
+            padding: 20px;
+        }
+
+        .nav-tabs .nav-link {
+            color: #007bff;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .form-group label {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        #createAgendar {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: #fff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .appointment-details {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 15px;
+}
+
+.appointment-details p {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+        <a id="user-logged-in" class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a id="logout" class="logout" href="#">Sair</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="agendas">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button"
+                    role="tab" aria-controls="home" aria-selected="true">Agendar</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button"
+                    role="tab" aria-controls="profile" aria-selected="false">Todas as consultas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#contact" type="button"
+                    role="tab" aria-controls="contact" aria-selected="false">Configurações</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <!-- Agendar -->
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <h3 class="mt-3 mb-4">Formulário de Agendamento</h3>
+                <form class="needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="servicoId">Serviços</label>
+                        <select class="form-control" id="servicoId" onchange="loadDentists()" required>
+                            <option value="" disabled selected>Selecione</option>
+                            <option value="Especialista Em Alinhamento">Especialista Em Alinhamento</option>
+                            <option value="Odontologia Cosmética">Odontologia Cosmética</option>
+                            <option value="Canal Radicular">Canal Radicular</option>
+                            <option value="Limpeza">Limpeza</option>
+                        </select>
+                        <button type="button" class="btn btn-primary mt-2" data-toggle="modal"
+                            data-target="#dentistModal">Ver Dentistas</button>
+                        <div class="form-group mt-3">
+                            <label for="selectedDentist">Dentista Selecionado</label>
+                            <input type="text" class="form-control" id="selectedDentist" readonly required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentId">Tipo de Pagamento</label>
+                        <select class="form-control" id="paymentId" required>
+                            <option value="" disabled selected>Selecione</option>
+                            <option value="1">Cartão de Crédito/Débito</option>
+                            <option value="2">Dinheiro</option>
+                            <option value="3">Pix</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Anotações</label>
+                        <textarea class="form-control" id="notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="dateButton">Selecionar Data</button>
+                        <div class="form-group mt-3">
+                            <label for="selectedDate">Data Selecionada</label>
+                            <input type="text" class="form-control" id="selectedDate" readonly required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="timeButton">Selecionar Horario</button>
+                        <div class="form-group mt-3">
+                            <label for="selectedTimeSlot">Horário da Consulta</label>
+                            <input type="text" class="form-control" id="selectedTimeSlot" readonly required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button id="createAgendar" class="btn btn-primary">Agendar</button>
+                    </div>
+                </form>
+            </div>
+            <!-- todas as consultas -->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <h3 class="mt-3 mb-4">Agendas criadas e opção de modificá-las</h3>
+            </div>
+            <!-- configurações -->
+            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                <h3 class="mt-3 mb-4">Configurações de usuário e editar informações</h3>
+            </div>
+        </div>
+
+        <!-- Adicione o modal no final do corpo do documento -->
+        <div class="modal fade" id="dentistModal" tabindex="-1" role="dialog" aria-labelledby="dentistModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dentistModalLabel">Dentistas Disponíveis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Lista de dentistas será exibida aqui -->
+                        <div id="dentistList"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="dateModal" tabindex="-1" role="dialog" aria-labelledby="dateModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dateModalLabel">Datas Disponíveis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Lista de datas será exibida aqui -->
+                        <ul id="dateList" class="list-group"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="timeSlotModal" tabindex="-1" role="dialog" aria-labelledby="timeSlotModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="timeSlotModalLabel">Horários Disponíveis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Lista de horários será exibida aqui -->
+                        <ul id="timeSlotList" class="list-group"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script  type="text/javascript" src="../key.js"></script>
+    <!-- Classe Usuário-->
+    <script  type="text/javascript" src="../classs/user.js"></script>
+
+    <script  type="text/javascript" src="../classs/reserva.js"></script>
+    
+    <!-- Bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+    <script> 
+        window.onload = function() {
+            // Verificar se o usuário está autenticado
+            
+        const currentUser = Parse.User.current();
+            if (currentUser) {
+                const userName = currentUser.get('username'); // Substitua 'username' pelo campo correto
+                console.log(userName)
+                // Encontre o elemento no HTML para exibir o nome do usuário
+                const userLoggedInElement = document.getElementById('user-logged-in');
+                // Preencha o elemento com o nome do usuário
+                userLoggedInElement.textContent = 'Olá, ' + userName;
+                
+                // Opcional: Adicione um link para fazer logout
+                // const logoutLink = document.createElement('a');
+                // logoutLink.textContent = 'Logout';
+                // logoutLink.href = '#'; // Insira a URL do logout
+                // logoutLink.addEventListener('click', function() {
+                //     Parse.User.logOut();
+                //     window.location.href = './index.html';
+                // });
+                // userLoggedInElement.appendChild(logoutLink);
+                const logout = document.getElementById('logout');
+                let textLogout = '';
+                textLogout += `<a id="logout" class="logout">Sair</a>`;
+                logout.innerHTML = textLogout;
+                logout.href = '#'; // Insira a URL do logout
+                logout.addEventListener('click', function() {
+                    Parse.User.logOut();
+                    window.location.href = '../index.html';
+                });
+                userLoggedInElement.appendChild(logout);
+        
+                // Encontre o elemento do botão de login
+                const loginButton = document.getElementById('login-button');
+        
+                if (currentUser) {
+                    // Usuário autenticado, oculte o botão de login
+                    loginButton.style.display = 'none';
+                } else {
+                    // Usuário não autenticado, mantenha o botão de login visível
+                    loginButton.style.display = 'block';
+                }
+            }
+        };
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+      
+        today = dd + '-' + mm + '-' + yyyy;
+        document.getElementById("data").setAttribute("min", today);
+        loadUserAppointments();
+        
+    </script>
+
+<script>
+  // Variável global para armazenar o objectId do dentista selecionado
+let selectedDentistObjectId = null;
+
+// Função para carregar dentistas
+function loadDentists() {
+    var serviceSelect = document.getElementById("servicoId");
+    var selectedService = serviceSelect.options[serviceSelect.selectedIndex].text;
+
+    var Servico = Parse.Object.extend("Servico");
+    var query = new Parse.Query(Servico);
+    query.equalTo("nome", selectedService);
+    query.include("user_id");
+
+    query.find().then(function(results) {
+        document.getElementById("dentistList").innerHTML = "";
+
+        for (var i = 0; i < results.length; i++) {
+            var dentist = results[i].get("user_id");
+            var dentistName = dentist.get("username");
+          
+            // Adicionar o nome do dentista à lista no modal
+            document.getElementById("dentistList").innerHTML += dentistName + "<br>";
+
+            // Adicionar um evento de clique para cada dentista na lista
+            document.getElementById("dentistList").addEventListener("click", function() {
+                // Armazenar o objectId do dentista selecionado na variável global
+                selectedDentistObjectId = dentist.id;
+                // Atualizar o campo de texto no formulário
+                document.getElementById("selectedDentist").value = dentistName;
+                // Fechar o modal
+                $('#dentistModal').modal('hide');
+            });
+        }
+    }).catch(function(error) {
+        console.error("Error loading dentists: " + error.message);
+    });
+}
+</script>
+
+<script>
+  document.getElementById("dateButton").addEventListener("click", function() {
+    loadDates(); // Chame a função que carrega as datas
+    $('#dateModal').modal('show'); // Exiba o modal
+});
+
+document.getElementById("timeButton").addEventListener("click", function() {
+    // Obtenha a data selecionada
+    var selectedDate = document.getElementById("selectedDate").value;
+
+    // Verifique se a data foi selecionada
+    if (selectedDate) {
+      // Chame a função que carrega os horários passando a data selecionada
+      loadTimeSlots(selectedDate);
+    } else {
+      // Caso a data não tenha sido selecionada, exiba uma mensagem ou tome a ação apropriada
+      alert("Por favor, selecione uma data antes de escolher um horário.");
+      // Ou realize outras ações conforme necessário
+    }
+  });
+
+</script>
+
+<script>
+  // Updated loadDentists function
+
+
+// Updated loadDates function
+function loadDates() {
+  var serviceSelect = document.getElementById("servicoId");
+  var selectedService = serviceSelect.options[serviceSelect.selectedIndex].text;
+
+  var Servico = Parse.Object.extend("Servico");
+  var queryServico = new Parse.Query(Servico);
+  queryServico.equalTo("nome", selectedService);
+
+  queryServico.first().then(function(servico) {
+    if (servico) {
+      var servicoId = servico.id;
+      var Horario = Parse.Object.extend("Horario");
+      var query = new Parse.Query(Horario);
+      query.equalTo('servico_id', {
+        __type: 'Pointer',
+        className: 'Servico',
+        objectId: servicoId,
+      });
+
+      return query.find();
+    } else {
+      throw new Error("Serviço não encontrado");
+    }
+  }).then(function(results) {
+    document.getElementById("dateList").innerHTML = "";
+
+    for (var i = 0; i < results.length; i++) {
+      var date = results[i].get("dia");
+      var listItem = document.createElement("li");
+      listItem.className = "list-group-item";
+      listItem.textContent = date;
+
+      // Use a closure to capture the selected date correctly
+      (function(selectedDate) {
+        listItem.addEventListener("click", function() {
+          document.getElementById("selectedDate").value = selectedDate;
+          $('#dateModal').modal('hide');
+        });
+      })(date);
+
+      document.getElementById("dateList").appendChild(listItem);
+    }
+  }).catch(function(error) {
+    console.error("Error loading dates: " + error.message);
+  });
+}
+
+
+function loadTimeSlots(selectedDate) {
+  document.getElementById("timeSlotList").innerHTML = "";
+
+  var serviceSelect = document.getElementById("servicoId");
+  var selectedService = serviceSelect.options[serviceSelect.selectedIndex].text;
+
+  var Servico = Parse.Object.extend("Servico");
+  var queryServico = new Parse.Query(Servico);
+  queryServico.equalTo("nome", selectedService);
+
+  queryServico.first().then(function(servico) {
+    if (servico) {
+      var servicoId = servico.id;
+      var Horario = Parse.Object.extend("Horario");
+      var query = new Parse.Query(Horario);
+      query.equalTo('servico_id', {
+        __type: 'Pointer',
+        className: 'Servico',
+        objectId: servicoId,
+      });
+      query.equalTo('dia', selectedDate);
+
+      return query.find();
+    } else {
+      throw new Error("Serviço não encontrado");
+    }
+  }).then(function(results) {
+    for (var i = 0; i < results.length; i++) {
+      var timeSlot = results[i].get("hora");
+      var listItem = document.createElement("li");
+      listItem.className = "list-group-item";
+      listItem.textContent = timeSlot;
+
+      // Use a closure to capture the selected time slot correctly
+      (function(selectedTimeSlot) {
+        listItem.addEventListener("click", function() {
+          document.getElementById("selectedTimeSlot").value = selectedTimeSlot;
+          $('#timeSlotModal').modal('hide');
+        });
+      })(timeSlot);
+
+      document.getElementById("timeSlotList").appendChild(listItem);
+    }
+
+    $('#timeSlotModal').modal('show');
+  }).catch(function(error) {
+    console.error("Error loading time slots: " + error.message);
+  });
+}
+
+function loadUserAppointments() {
+    const currentUser = Parse.User.current();
+    if (currentUser) {
+        const userId = currentUser.id;
+
+        // Crie uma consulta para a tabela Agenda
+        var Agenda = Parse.Object.extend("Agenda");
+        var query = new Parse.Query(Agenda);
+
+        // Filtrar consultas apenas para o usuário atual
+        query.equalTo("cliente_id", {
+            __type: "Pointer",
+            className: "_User",
+            objectId: userId
+        });
+
+        // Incluir dados relacionados (apenas exemplos, ajuste conforme sua estrutura de dados)
+        query.include("servico_id");
+        query.include("dentista_id");
+
+        // Executar a consulta
+        query.find().then(function(results) {
+            // Limpar conteúdo existente na aba de consultas
+            document.getElementById("profile").innerHTML = "";
+
+            // Iterar sobre os resultados e exibir os detalhes das consultas
+            for (var i = 0; i < results.length; i++) {
+                var appointment = results[i];
+                var appointmentDetails = document.createElement("div");
+                appointmentDetails.className = "appointment-details";
+
+                // Obter a data da consulta
+                var appointmentDate = appointment.get("data");
+
+                // Formatar a data no formato 'dd-mm-yyyy'
+                var formattedDate = formatDate(appointmentDate);
+
+                // Exibir apenas a data na parte de data
+                appointmentDetails.innerHTML = `
+                    <p>Data: ${formattedDate}</p>
+                    <p>Dentista: ${appointment.get("dentista_id").get("username")}</p>
+                    <p>Serviço: ${appointment.get("servico_id").get("nome")}</p>
+                    <p>Hora: ${appointment.get("hora")}</p>
+                    <p>Método de Pagamento: ${getPaymentMethodText(appointment.get("metodoPagamento"))}</p>
+                    <p>Anotações: ${appointment.get("anotacoes")}</p>
+                `;
+
+                // Adicione os detalhes ao conteúdo da aba "Todas as consultas"
+                document.getElementById("profile").appendChild(appointmentDetails);
+            }
+        }).catch(function(error) {
+            console.error("Error loading user appointments: " + error.message);
+        });
+    }
+}
+
+function formatDate(dateString) {
+    var date = new Date(dateString);
+    var day = String(date.getDate()).padStart(2, '0');
+    var month = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var year = date.getFullYear();
+
+    return day + '/' + month + '/' + year;
+}
+
+// Função para obter o texto correspondente ao método de pagamento
+function getPaymentMethodText(paymentMethod) {
+    switch (paymentMethod) {
+        case "1":
+            return "Cartão de Crédito/Débito";
+        case "2":
+            return "Dinheiro";
+        case "3":
+            return "Pix";
+        default:
+            return "Método de Pagamento Desconhecido";
+    }
+}
+
+
+</script>
+
+
+        
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function() {
+          'use strict';
+          window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+              form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+              }, false);
+            });
+          }, false);
+        })();
+    </script>
+</body>
+</html>

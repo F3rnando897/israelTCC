@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" type="x-icon" href="https://raw.githubusercontent.com/YsraelBaruk/imgsTCC/master/icon/dente-30.png">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="../public/css/login/style.css">
+
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <title>Dental Clinic</title>
+</head>
+<body>   
+    <main id="container">
+        <form id="login_form" class="needs-validation" novalidate>
+            <div id="form_header">
+                <h1>Login <img src="../public/images/icon/dente-30.png" alt="logo home"></h1>
+                <i id="mode_icon" class="fa-solid fa-moon"></i>
+            </div>
+            <!-- INPUTS -->
+            <div id="inputs form-group has-validation">
+                <!-- NAME -->
+                <div class="input-box form-group has-validation">
+                    <label for="username">Username</label>
+                        <div class="input-field">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                    <div class="error-message" id="login-username-error"></div>
+                </div>
+                <!-- PASSWORD -->
+                <div class="input-box form-group has-validation">
+                    <label for="password">Password</label>
+                        <div class="input-field">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                    <div class="error-message" id="login-password-error"></div>
+                    
+                    <div id="forgot_password">
+                        <a href="./register.html">
+                            Cadastre-se
+                        </a>
+                    </div>
+                    <!-- FORGOT PASSWORD -->
+                    <div id="forgot_password">
+                        <a href="#">
+                            Esqueceu a sua senha?
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- LOGIN BUTTON -->
+            <button class="loginBtn btn" id="login_button">Login</button>
+            <div class="error-message" id="login-error"></div>
+        </form>
+    </main>
+
+    <!-- <script  type="text/javascript" src="../public/js/login/script.js"></script> -->
+    <script  type="text/javascript" src="../public/js/login/icon.js"></script>
+    <script src="../../key.js"></script>
+
+    <script src="../classs/user.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+
+<script>
+    document.getElementById("login_button").addEventListener("click", Login);
+    (function() {
+      'use strict';
+      window.addEventListener('load', function() {
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.getElementsByClassName('needs-validation');
+        // Loop over them and prevent submission
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+            // alert('Erro ao logar o usuário');
+          }, false);
+        });
+      }, false);
+    })();
+</script>
+
+
+</body>
+</html>

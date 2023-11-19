@@ -1,0 +1,90 @@
+ 1-footer RESPONSIVO: https://www.youtube.com/watch?v=SUFzgCwJZkk
+
+ 2-Formulário com Modo DARK e LIGHT:https://www.youtube.com/watch?v=qKWApkuhNu8
+
+ 3-formulario 2:https://www.youtube.com/watch?v=69-WfrVBli8
+
+
+Agendamento:
+1-https://www.youtube.com/watch?v=7y_oxyZCDbI&list=PLuHGmgpyHfRw0wBGN8knxsJsMi74r34zw&index=28
+
+2-https://calendly.com/event_types/user/me
+
+Switch Alerta - https://sweetalert2.github.io/#download
+
+loghin:
+um usuario cadastra,com username,email,password,telefone.
+E em seguida o usuario faz um login com username e senha.
+como eu posso criar uma função de login em javaScript,para redireciona-lo para aba de usuario?
+
+
+javascript 
+async function loginUser(username, password) {
+    // Acessar o arquivo json com os usuários
+    const response = await fetch('usuarios.json');
+    const usuarios = await response.json();
+
+    // Procurar o usuário pelo username e password
+    const usuarioEncontrado = usuarios.find(usuario => usuario.username === username && usuario.password === password);
+
+    // Se o usuário for encontrado, redirecionar para a aba de usuário
+    if (usuarioEncontrado) {
+        window.location.href = 'usuario.html';
+    } else {
+        alert('Usuário ou senha incorretos');
+    }
+}
+html
+<form onsubmit="event.preventDefault(); loginUser(document.getElementById('username').value, document.getElementById('password').value);">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <br>
+    <input type="submit" value="Login">
+</form>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+como fazer um get das informações do usuário do back4app:
+javaScript
+const username = 'usuario@exemplo.com'; // Insira o username do usuário que você deseja buscar
+const password = 'senha_usuario'; // Insira a senha do usuário que você deseja buscar
+
+// Crie um novo Parse User
+const user = new Parse.User();
+user.set('username', username);
+user.set('password', password);
+
+// Faça o login
+user.logIn().then(
+    function (user) {
+        // Faça um get das informações do usuário
+        Parse.Cloud.run('getUserData', { username: username }).then(
+            function (response) {
+                console.log(response);
+            },
+            function (error) {
+                console.error(error);
+            }
+        );
+    },
+    function (error) {
+        console.error(error);
+    }
+);
+
+javascript
+Parse.Cloud.define('getUserData', async (request) => {
+    const query = new Parse.Query(Parse.User);
+    query.equalTo('username', request.params.username);
+    const user = await query.first({ useMasterKey: true });
+    return user;
+}); 
+
+javascript
+const config = {
+    appId: 'APP_ID',
+    masterKey: 'MASTER_KEY',
+    serverURL: 'SERVER_URL',
+};

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- This is the minified production version of parse js -->
+    <script
+      type="text/javascript"
+      src="https://npmcdn.com/parse/dist/parse.min.js"
+    ></script>
+  </head>
+  <body>
+    <h1>JS SDK</h1>
+    <input id="username" type="text" placeholder="Username" />
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <input id="telefone" type="tel" placeholder="Telefone" />
+    <input id="funcao" type="text" placeholder="Cliente/Denstista" />
+    <button id="createButton">Create User</button>
+  </body>
+  <script>
+    // Initialize Parse
+    // Parse.initialize("WnILdLrE2IFpL6W1YJeeDEzNucE2zDoWmDKJeYpB", "LRYb56nrG0ZvFflfHjS2Xt1FfDZwx9O8QtWoAeJR"); //PASTE HERE YOUR Back4App APPLICATION ID AND YOUR JavaScript KEY
+    // Parse.serverURL = "https://parseapi.back4app.com/";
+
+    // // Create a new User
+    // async function createParseUser() {
+    //   let user = new Parse.User();
+    //   user.set("username", document.getElementById("username").value);
+    //   user.set("email", document.getElementById("email").value);
+    //   user.set("password", document.getElementById("password").value);
+    //   user.set("telefone", document.getElementById("telefone").value);
+    //   user.set("funcao", document.getElementById("funcao").value);
+
+    //   try {
+    //     // Call the save method, which returns the saved object if successful
+    //     user = await user.save();
+    //     if (user !== null) {
+    //       // Notify the success by getting the attributes from the "User" object, by using the get method (the id attribute needs to be accessed directly, though)
+    //       alert(
+    //         `New object created with success! ${
+    //           user.id
+    //         }, ${user.get("username")}`
+    //       );
+    //     }
+    //   } catch (error) {
+    //     alert(`Error: ${error.message}`);
+    //   }
+    // }
+
+    // // Add on click listener to call the create parse user function
+    // document.getElementById("createButton").addEventListener("click", async function () {
+    //   createParseUser();
+    // });
+
+    async function createParseUser(){
+      const user = new Parse.User();
+      user.set('username', document.getElementById("username").value);
+      user.set('email', document.getElementById("email").value);
+      user.set('telefone', document.getElementById("telefone").value);
+      user.set('funcao', document.getElementById("funcao").value);
+      
+      // const imagem = new Parse.File("resume.txt", { base64: btoa("") })
+      // user.set('img_profile', document.getElementById("img_profile").value);
+      user.set('password', document.getElementById("password").value);
+
+      try {
+        let userResult = await user.signUp();
+        console.log('User signed up', userResult);
+      } catch (error) {
+        console.error('Error while signing up user', error);
+      }
+    };
+    document.getElementById("createButton").addEventListener("click", async function () {
+      createParseUser();
+    });
+  </script>
+
+<!-- <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="w-100" src="./images/carosell/dentista-fazendo-um-check-up-no-paciente.jpg" alt="First slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="./images/carosell/dentistas-sorrindo-e-posando-na-clinica-odontologica.jpg" alt="Second slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src="./images/carosell/jovem-paciente-do-sexo-feminino-visitando-o-consultorio-do-dentista.jpg" alt="Third slide">
+    </div>
+  </div>
+</div> -->
+</html>

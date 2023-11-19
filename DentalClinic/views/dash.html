@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" type="x-icon" href="https://raw.githubusercontent.com/YsraelBaruk/imgsTCC/master/icon/dente-30.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Clinic</title>
+    <script type="text/javascript" src="https://npmcdn.com/parse/dist/parse.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="../public/css/dash/style.css">
+
+    <!-- Adicione o link do CDN do flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Adicione o link do CDN do flatpickr e o script de localização -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.min.js"></script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="./agenda.html">Agenda</a>
+                <a class="nav-item nav-link" href="./dash.html">Serviços</a>
+                <a class="nav-item nav-link" href="./relatorios.html">Relatórios</a>
+                <a class="nav-item nav-link" href="#">Equipe</a>
+                <a class="nav-item nav-link" href="#">Clientes</a>
+            </div>
+        </div>
+        <div class="navbar-nav ml-auto">
+            <a class="navbar-brand" id="user-logged-in" href="#">User</a>
+            <span id="logout" class="nav-item ml-2"></span>
+        </div>
+    </nav>
+
+    <div class="midBody">
+        <div class="container mt-5 d-flex">
+            <div class="form-container">
+                <form id="createServico-form" class="container mt-5 needs-validation" novalidate>
+                    <div class="form-group">
+                        <label for="nome">Nome do serviço</label>
+                        <input id="nome" class="form-control" type="text" required>
+                        <div class="invalid-feedback">
+                            Por favor, defina o nome do serviço.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="anotacoes">Observações</label>
+                        <textarea class="form-control" id="anotacoes" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="preco">Preço</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">R$</span>
+                            </div>
+                            <input id="preco" type="text" class="form-control" aria-label="Amount (to the nearest dollar)" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Adicione um campo de data no formulário de criação -->
+                    <div class="form-group">
+                        <label for="data">Dias disponíveis</label>
+                        <input id="data" type="text" class="form-control" placeholder="Selecione os dias" data-input>
+                    </div>
+                    
+                    <!-- Adicione um botão para selecionar horários -->
+<div class="form-group">
+    <label for="hora">Hora</label>
+    <div class="input-group">
+        <input id="hora" type="text" class="form-control" placeholder="Selecione os horários" selectedOptions readonly>
+        <div class="input-group-append">
+            <button id="selectHorarioBtn" class="btn btn-primary" type="button" data-toggle="modal" data-target="#horarioModal">Selecionar Horário</button>
+        </div>
+    </div>
+</div>
+                    <button id="createServico" type="submit" class="btn btn-primary">Criar um Serviço</button>
+                </form>
+            </div>
+
+            <div class="list-container">
+                <h2>Lista de Serviços</h2>
+                <table id="consultas-table" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nome do serviço</th>
+                            <th scope="col">Observações</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servicos-list">
+                        <!-- A lista de consultas será adicionada aqui dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Serviço</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulário de Edição -->
+                    <form id="editServico-form" class="needs-validation" novalidate>
+                        <div class="form-group">
+                            <label for="edit-nome">Nome do serviço</label>
+                            <input id="edit-nome" class="form-control" type="text" required>
+                            <div class="invalid-feedback">
+                                Por favor, defina o nome do serviço.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-anotacoes">Observações</label>
+                            <textarea class="form-control" id="edit-anotacoes" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-preco">Preço</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">R$</span>
+                                </div>
+                                <input id="edit-preco" type="text" class="form-control" aria-label="Amount (to the nearest dollar)" required>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="updateServico" type="button" class="btn btn-primary">Atualizar Serviço</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal de Seleção de Horários -->
+<div class="modal fade" id="horarioModal" tabindex="-1" role="dialog" aria-labelledby="horarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="horarioModalLabel">Selecione os Horários Disponíveis</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Use checkboxes para permitir a seleção de vários horários -->
+                <div id="horarioCheckboxes">
+                    <!-- Horários serão adicionados aqui dinamicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button id="confirmHorariosBtn" type="button" class="btn btn-primary">Confirmar Horários</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- Seu restante do código JavaScript -->
+    <script type="text/javascript" src="../key.js"></script>
+    <script type="text/javascript" src="../classs/user.js"></script>
+    <script type="text/javascript" src="../classs/servico.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+
+    <script> 
+        window.onload = function() {
+            // Verificar se o usuário está autenticado
+            const currentUser = Parse.User.current();
+
+            if (currentUser) {
+                const userName = currentUser.get('username');
+                const userLoggedInElement = document.getElementById('user-logged-in');
+                userLoggedInElement.textContent = 'Olá, ' + userName;
+
+                const logout = document.getElementById('logout');
+                let textLogout = `<button type="button" class="btn btn-dark">Logout</button>`;
+                logout.innerHTML = textLogout;
+                logout.href = '#';
+                logout.addEventListener('click', function() {
+                    Parse.User.logOut();
+                    window.location.href = '../index.html';
+                });
+                userLoggedInElement.appendChild(logout);
+
+                // Carregue e exiba a lista de consultas
+                loadServicos();
+            }
+        };
+
+        // Função para carregar e exibir a lista de consultas
+        function loadServicos() {
+            const currentUser = Parse.User.current();
+            const Servico = Parse.Object.extend('Servico');
+            const query = new Parse.Query(Servico);
+
+            // Filtre os serviços criados pelo usuário atual
+            query.equalTo('user_id', currentUser);
+
+            // Execute a consulta
+            query.find().then(function (results) {
+                const servicosTableBody = document.getElementById('servicos-list');
+
+                // Limpe a tabela antes de adicionar os novos itens
+                servicosTableBody.innerHTML = '';
+
+                // Adicione cada consulta à tabela
+                results.forEach(function (servico) {
+                    const nome = servico.get('nome');
+                    const observacoes = servico.get('observacoes');
+                    const preco = servico.get('preco').toFixed(2);
+
+                    // Crie uma nova linha na tabela
+                    const row = servicosTableBody.insertRow();
+
+                    // Adicione células com os detalhes da consulta
+                    const cellNome = row.insertCell(0);
+                    const cellObservacoes = row.insertCell(1);
+                    const cellPreco = row.insertCell(2);
+                    const cellAcoes = row.insertCell(3); // Coluna para botões de ação
+
+                    // Preencha as células com os detalhes da consulta
+                    cellNome.innerHTML = nome;
+                    cellObservacoes.innerHTML = observacoes;
+                    cellPreco.innerHTML = `R$ ${preco}`;
+
+                    // Adicione botões de editar e excluir
+                    const editButton = document.createElement('button');
+                    editButton.className = 'btn btn-warning btn-sm';
+                    editButton.textContent = 'Editar';
+                    editButton.addEventListener('click', function () {
+                        // Preencher o formulário de edição com os detalhes do serviço
+                        document.getElementById('edit-nome').value = nome;
+                        document.getElementById('edit-anotacoes').value = observacoes;
+                        document.getElementById('edit-preco').value = preco;
+
+                        // Adicionar um evento de clique para o botão de atualização
+                        document.getElementById('updateServico').onclick = function () {
+                            updateServico(servico);
+                        };
+
+                        // Abrir o modal de edição
+                        $('#editModal').modal('show');
+                    });
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-danger btn-sm ml-1';
+                    deleteButton.textContent = 'Excluir';
+                    deleteButton.addEventListener('click', function () {
+                        // Lógica de exclusão aqui
+                        if (confirm('Tem certeza que deseja excluir?')) {
+                            servico.destroy().then(function () {
+                                // Atualize a tabela após a exclusão
+                                loadServicos();
+                            }).catch(function (error) {
+                                console.error('Erro ao excluir serviço:', error);
+                            });
+                        }
+                    });
+
+                    // Adicione os botões à célula de ações
+                    cellAcoes.appendChild(editButton);
+                    cellAcoes.appendChild(deleteButton);
+                });
+            }).catch(function (error) {
+                console.error('Erro ao carregar serviços:', error);
+            });
+        }
+
+        // Função para atualizar um serviço
+        function updateServico(servico) {
+            const nome = document.getElementById('edit-nome').value;
+            const observacoes = document.getElementById('edit-anotacoes').value;
+            const preco = parseFloat(document.getElementById('edit-preco').value);
+
+            // Validar os campos
+            if (!nome || !observacoes || isNaN(preco)) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            // Atualizar os dados do serviço
+            servico.set('nome', nome);
+            servico.set('observacoes', observacoes);
+            servico.set('preco', preco);
+
+            // Salvar as alterações
+            servico.save().then(function () {
+                // Fechar o modal de edição
+                $('#editModal').modal('hide');
+
+                // Atualizar a tabela
+                loadServicos();
+            }).catch(function (error) {
+                console.error('Erro ao atualizar serviço:', error);
+            });
+        }
+
+    </script>
+
+    <script>
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+</body>
+</html>
